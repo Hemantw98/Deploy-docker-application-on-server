@@ -15,27 +15,27 @@ Step 1: First, make sure that we have Docker and Docker Compose installed on you
 
 Step 2: Create a Docker Compose file that defines your application and its dependencies. Here's an example Docker Compose file for a Node.js app with MongoDB and MongoExpress services:
 
-    version: '3'
-services:
-  my-app:
-    image: 568534212756.dkr.ecr.ap-south-1.amazonaws.com/my-app:1.0
-    ports:
-      - 3000:3000
-  mongodb:
-    image: mongo
-    ports:
-      - 27017:27017
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-  mongo-express:
-    image: mongo-express
-    ports:
-      - 8080:8081
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
-      - ME_CONFIG_MONGODB_SERVER=mongodb
+        version: '3'
+    services:
+      my-app:
+        image: 568534212756.dkr.ecr.ap-south-1.amazonaws.com/my-app:1.0
+        ports:
+          - 3000:3000
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+        environment:
+          - MONGO_INITDB_ROOT_USERNAME=admin
+          - MONGO_INITDB_ROOT_PASSWORD=password
+      mongo-express:
+        image: mongo-express
+        ports:
+          - 8080:8081
+        environment:
+          - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+          - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+          - ME_CONFIG_MONGODB_SERVER=mongodb
 
 Step 3: Build Docker image and push it to private Docker registry. You can use the following commands to build and push your Docker image to Amazon ECR:
 
