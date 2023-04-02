@@ -1,72 +1,68 @@
-## demo app - developing with Docker
+##  Deploy Docker application on a server with Docker Compose
 
-This demo app shows a simple user profile app set up using 
-- index.html with pure js and css styles
-- nodejs backend with express module
-- mongodb for data storage
+### Technologies used:
+Docker, Amazon ECR, Node.js, MongoDB, MongoExpress
 
-All components are docker-based
+### Project Description:
 
-### With Docker
+Copy Docker-compose file to remote server
+Login to private Docker registry on remote server to fetch our app image
+Start our application container with MongoDB and MongoExpress services using docker compose
 
-#### To start the application
+### Below are the steps to deploy a Docker application on a server with Docker Compose:
 
-Step 1: Create docker network
+Step 1: First, make sure that we have Docker and Docker Compose installed on your local machine.
 
-    docker network create mongo-network 
+Step 2: Create a Docker Compose file that defines your application and its dependencies. Here's an example Docker Compose file for a Node.js app with MongoDB and MongoExpress services:
 
-Step 2: start mongodb 
+    version: '3'
+services:
+  my-app:
+    image: 568534212756.dkr.ecr.ap-south-1.amazonaws.com/my-app:1.0
+    ports:
+      - 3000:3000
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8080:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
 
-    docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --name mongodb --net mongo-network mongo    
+Step 3: Build Docker image and push it to private Docker registry. You can use the following commands to build and push your Docker image to Amazon ECR:
 
-Step 3: start mongo-express
+        docker build -t <your-docker-image-url> .
+    docker push <your-docker-image-url>
+       
+Step 4: Copy the Docker Compose file to your remote server. You can use the scp command to copy the file to your server:
+
+    scp docker-compose.yml <remote-server-username>@<remote-server-ip>:<remote-path>
+
+Step 5: SSH into your remote server and log in to your private Docker registry using the following command:
+
+    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 568534212756.dkr.ecr.ap-south-1.amazonaws.com
     
-    docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password --net mongo-network --name mongo-express -e ME_CONFIG_MONGODB_SERVER=mongodb mongo-express   
+Step 6: Navigate to the directory where you copied the Docker Compose file and run the following command to start your application:
 
-_NOTE: creating docker-network in optional. You can start both containers in a default network. In this case, just emit `--net` flag in `docker run` command_
-
-Step 4: open mongo-express from browser
-
-    http://localhost:8081
-
-Step 5: create `user-account` _db_ and `users` _collection_ in mongo-express
-
-Step 6: Start your nodejs application locally - go to `app` directory of project 
-
-    cd app
-    npm install 
-    node server.js
+    docker-compose -f mongo.yaml up
     
-Step 7: Access you nodejs application UI from browser
+Step 7: Once the containers are up and running, you can access your application by navigating to the IP address of your remote server in a web browser. In this example, you would navigate to http://<remote-server-ip>:80 to access your Node.js application.
 
-    http://localhost:3000
+That's it! Your Docker application is now up and running on your remote server with Docker Compose.
 
-### With Docker Compose
 
-#### To start the application
 
-Step 1: start mongodb and mongo-express
 
-    docker-compose -f docker-compose.yaml up
-    
-_You can access the mongo-express under localhost:8080 from your browser_
-    
-Step 2: in mongo-express UI - create a new database "my-db"
 
-Step 3: in mongo-express UI - create a new collection "users" in the database "my-db"       
-    
-Step 4: start node server 
 
-    cd app
-    npm install
-    node server.js
-    
-Step 5: access the nodejs application from browser 
 
-    http://localhost:3000
 
-#### To build a docker image from the application
-
-    docker build -t my-app:1.0 .       
-    
-The dot "." at the end of the command denotes location of the Dockerfile.
+ 
